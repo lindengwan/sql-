@@ -1,0 +1,45 @@
+CREATE SEQUENCE seq_240105;
+CREATE OR REPLACE PROCEDURE sp_0105(p_tname IN VARCHAR2) IS
+  vt     NUMBER;
+  test   varchar2(2000);
+  v_date DATE := sysdate;
+  FUNCTION suiji(min_val IN NUMBER, max_val IN NUMBER) RETURN NUMBER IS
+    random_num NUMBER;
+  
+  BEGIN
+    random_num := trunc(dbms_random.value(min_val, max_val));
+    RETURN random_num;
+  END suiji;
+BEGIN
+
+  SELECT COUNT(table_name)
+    INTO vt
+    FROM User_Tables
+   WHERE table_name = upper(p_tname);
+
+  IF vt < 1 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLE ' || p_tname || '(
+    serialNo number,filepath varchar2(6),
+   partID number(4),
+   staffNo varchar2(11),
+   recordTime date)';
+  END IF;
+  
+  FOR i in 1..1000 loop
+  --SELECT    (DATE'2012-08-01' - DATE'2012-02-01')  FROM DUAL;
+  V_DATE:=DATE'2012-08-01' -SUIJI(1,182);
+  test := 'insert into '||p_tname||' values (' || seq_240105.NEXTVAL || ',''' ||
+          DBMS_RANDOM.STRING('U', 6) || ''',' || suiji(1000, 9999) ||
+          ',''YTCZ' || suiji(60001, 60020) || ''',date''' ||
+          to_char(v_date, 'yyyy-mm-dd') || ''')';
+  --print(test);
+  EXECUTE IMMEDIATE test;
+  end loop;
+END;
+
+
+begin
+FOR I IN 1..500 LOOP
+  sp_0105('ANY_TABLE_NAME');
+END LOOP;
+end;
