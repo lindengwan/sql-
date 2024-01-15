@@ -1,0 +1,104 @@
+create or replace procedure d24(a in number,
+                                b in number,
+                                c in number,
+                                d in number) is
+  TYPE string_list IS TABLE OF VARCHAR2(100) INDEX BY PLS_INTEGER;
+  TYPE number_list IS TABLE OF number(20) INDEX BY PLS_INTEGER;
+  my_list string_list;
+  n_list  number_list;
+  ex      VARCHAR2(30);
+  fx      VARCHAR2(30);
+  gx      VARCHAR2(30);
+  function s_ize(n1 in number,
+                 n2 in number,
+                 s  in varchar2,
+                 v1 in varchar2,
+                 v2 in varchar2,
+                 v3 out varchar2) return number is
+    resu number;
+  begin
+    if s = '+' then
+      resu := n1 + n2;
+      v3   := ('(' || v1 || '+' || v2 || ')');
+    elsif s = '-' then
+      resu := n1 - n2;
+      v3   := ('(' || v1 || '-' || v2 || ')');
+    elsif s = '*' then
+      resu := n1 * n2;
+      v3   := ('(' || v1 || '*' || v2 || ')');
+    elsif s = '/' and n2 != 0 then
+      resu := n1 / n2;
+      v3   := ('(' || v1 || '/' || v2 || ')');
+    elsif s = '--' then
+      resu := n2 - n1;
+      v3   := ('(' || v2 || '-' || v1 || ')');
+    elsif s = '//' and n1 != 0 then
+      resu := n2 / n1;
+      v3   := ('(' || v2 || '/' || v1 || ')');
+    end if;
+    return resu;
+  end s_ize;
+begin
+  my_list(1) := '+';
+  my_list(2) := '-';
+  my_list(3) := '*';
+  my_list(4) := '/';
+  my_list(5) := '--';
+  my_list(6) := '//';
+  n_list(1) := a;
+  n_list(2) := b;
+  n_list(3) := c;
+  n_list(4) := d;
+  FOR i IN 1 .. 4 LOOP
+    FOR j IN 1 .. 4 LOOP
+      FOR k IN 1 .. 4 LOOP
+        FOR l IN 1 .. 4 LOOP
+          FOR m IN 1 .. 6 LOOP
+            FOR n IN 1 .. 6 LOOP
+              FOR o IN 1 .. 6 LOOP
+                if i != j and j != k and i != k and l != i and l != j and
+                   l != k then
+                  if s_ize(s_ize(s_ize(n_list(i),
+                                       n_list(j),
+                                       my_list(m),
+                                       (n_list(i) || ''),
+                                       (n_list(j) || ''),
+                                       ex),
+                                 n_list(k),
+                                 my_list(n),
+                                 ex,
+                                 (n_list(k) || ''),
+                                 fx),
+                           n_list(l),
+                           my_list(o),
+                           fx,
+                           n_list(l) || '',
+                           ex) = 24 then
+                    print(ex);
+                  elsif s_ize(s_ize(n_list(i),
+                                    n_list(j),
+                                    my_list(m),
+                                    (n_list(i) || ''),
+                                    (n_list(j) || ''),
+                                    ex),
+                              s_ize(n_list(k),
+                                    n_list(l),
+                                    my_list(n),
+                                    (n_list(k) || ''),
+                                    (n_list(l) || ''),
+                                    fx),
+                              my_list(o),
+                              ex,
+                              fx,
+                              gx) = 24 then
+                    print(gx);
+                  end if;
+                end if;
+              END LOOP;
+            END LOOP;
+          END LOOP;
+        END LOOP;
+      END LOOP;
+    END LOOP;
+  END LOOP;
+END;
